@@ -32,14 +32,10 @@ class TranslateController extends Controller
         $this->validate($request, $this->validationRules);
 
         $words  = explode(' ', $request->only('words')['words']);
-        $query  = $request->query('from', 'to');
-
-        $from   = $query['from'] ?? 'en';
-        $to     = $query['to']  ?? 'bg';
 
         $meaning = [];
         foreach ($words as $word) {
-            $meaning[$word] = TransltrClient::transalte($word, $from, $to)['translationText'];
+            $meaning[$word] = TransltrClient::transalte($word, 'en', 'bg')['translationText'];
         }
 
         return view('welcome', ['translated' => $meaning]);
