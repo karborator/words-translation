@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Client\TransltrClient;
 use App\Word;
 use Illuminate\Http\Request;
 
@@ -35,7 +34,17 @@ class TranslateController extends Controller
 
         $meaning = [];
         foreach ($words as $word) {
-            $meaning[$word] = TransltrClient::transalte($word, 'en', 'bg')['translationText'];
+            /** @var \Illuminate\Database\Eloquent\Builder $wordCollection */
+            if(!($entity = Word::where(['word' => $word])->get()->first())){
+                $meaning[$word] = $word;
+                continue;
+            }
+
+            $entity = $entity->toArray();
+
+            $meaning[$word] = isset($entity['meaning'])
+                ? $entity['meaning']
+                : $word;
         }
 
         return view('welcome', ['translated' => $meaning]);
